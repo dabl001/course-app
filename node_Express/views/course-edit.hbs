@@ -52,6 +52,7 @@
 </form>
 
 <form action='/courses/remove' method='POST'>
+    <input type='hidden' name='_csrf' value={{csrf}} />
     <input type='hidden' name='id' value='{{course.id}}' />
     <button class='btn red'>Delite course</button>
 </form>
