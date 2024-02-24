@@ -15,7 +15,7 @@ router.post('/login', async (req, res) => {
         const { email, password } = req.body;
         const candidate = await User.findOne({ email });
         if (candidate) {
-            const areSame = password === candidate.password;
+            const areSame = await bcrypt.compare(password, candidate.password);
             if (areSame) {
                 req.session.user = candidate;
                 req.session.isAuthenticated = true;
@@ -49,10 +49,11 @@ router.post('/register', async (req, res) => {
         if (candidate) {
             res.redirect('/auth/login#register');
         } else {
+            const hashPassword = await bcrypt.hash(password, 10);
             const user = new User({
                 email,
                 name,
-                password,
+                password: hashPassword,
                 cart: {
                     items: [],
                 },
