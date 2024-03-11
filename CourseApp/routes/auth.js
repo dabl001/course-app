@@ -7,6 +7,8 @@ router.get('/login', async (req, res) => {
     res.render('auth/login', {
         title: 'Login',
         isLogin: true,
+        loginError: req.flash('loginError'),
+        registerError: req.flash('registerError'),
     });
 });
 
@@ -14,6 +16,7 @@ router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
         const candidate = await User.findOne({ email });
+
         if (candidate) {
             const areSame = await bcrypt.compare(password, candidate.password);
             if (areSame) {
@@ -26,9 +29,11 @@ router.post('/login', async (req, res) => {
                 });
                 res.redirect('/');
             } else {
+                req.flash('loginError', 'Incorrect password!');
                 res.redirect('/auth/login#login');
             }
         } else {
+            req.flash('loginError', 'User doesnt exist!');
             return res.redirect('/auth/login#login');
         }
     } catch (error) {
@@ -46,7 +51,9 @@ router.post('/register', async (req, res) => {
     try {
         const { email, password, repeat, name } = req.body;
         const candidate = await User.findOne({ email });
+
         if (candidate) {
+            req.flash('registerError', 'User with this email already exists!');
             res.redirect('/auth/login#register');
         } else {
             const hashPassword = await bcrypt.hash(password, 10);

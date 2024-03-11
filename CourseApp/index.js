@@ -1,26 +1,23 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const csrf = require('csurf');
+const flash = require('connect-flash');
 const path = require('path');
 const Handlebars = require('handlebars');
 const exphbs = require('express-handlebars');
 const session = require('express-session');
 const MongoStore = require('connect-mongodb-session')(session);
-const {
-    allowInsecurePrototypeAccess,
-} = require('@handlebars/allow-prototype-access');
+const { allowInsecurePrototypeAccess } = require('@handlebars/allow-prototype-access');
 const homeRouts = require('./routes/home');
 const addRouts = require('./routes/add');
 const coursesRouts = require('./routes/courses');
 const ordersRouts = require('./routes/orders');
 const cardRouts = require('./routes/card');
 const authRoutes = require('./routes/auth');
-const User = require('./models/user');
 const varMiddleware = require('./middleware/variables');
 const userMiddleware = require('./middleware/user');
 
-const MONGODB_URI =
-    'mongodb+srv://dabl01:Abyl2001@cluster0.4oqyp.mongodb.net/shop';
+const MONGODB_URI = 'mongodb+srv://dabl01:Abyl2001@cluster0.4oqyp.mongodb.net/shop';
 const app = express();
 const hbs = exphbs.create({
     defaultLayout: 'main',
@@ -47,6 +44,7 @@ app.use(
     })
 );
 app.use(csrf());
+app.use(flash());
 app.use(varMiddleware);
 app.use(userMiddleware);
 
