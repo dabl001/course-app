@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/user');
 const bcrypt = require('bcryptjs');
+const nodemailer = require('nodemailer');
+const sendMail = require('../middleware/mail');
 
 router.get('/login', async (req, res) => {
     res.render('auth/login', {
@@ -49,7 +51,7 @@ router.get('/logout', async (req, res) => {
 
 router.post('/register', async (req, res) => {
     try {
-        const { email, password, repeat, name } = req.body;
+        const { email, password, name } = req.body;
         const candidate = await User.findOne({ email });
 
         if (candidate) {
@@ -67,6 +69,9 @@ router.post('/register', async (req, res) => {
             });
             await user.save();
             res.redirect('/auth/login#login');
+            const content = `<h1>Welcome to our Course Shop</h1>
+                            <p>You have successfully registered by email: ${email}!</p>`;
+            sendMail(nodemailer, user.email, content);
         }
     } catch (err) {
         console.log(err);
